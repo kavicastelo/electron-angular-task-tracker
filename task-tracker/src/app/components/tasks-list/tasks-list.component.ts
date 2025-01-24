@@ -1,15 +1,53 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, signal, ViewChild} from '@angular/core';
 import {TasksService} from '../../services/tasks.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {NgForOf} from '@angular/common';
+import {TaskDetailsComponent} from '../task-details/task-details.component';
 
 @Component({
   selector: 'app-tasks-list',
   imports: [
-    NgForOf
+    NgForOf,
+    TaskDetailsComponent
   ],
   standalone: true,
-  templateUrl: './tasks-list.component.html',
+  template: `
+    <div class="task-tracker">
+      <h1>Task Tracker</h1>
+      <input
+        type="text"
+        placeholder="New task"
+        #taskInput
+        (keydown.enter)="addOrUpdateTask(taskInput.value)"
+      />
+      <ul>
+        <li *ngFor="let task of tasksService.tasks()" @fade>
+      <span
+        [class.completed]="task.completed"
+        (click)="selectTask(task)"
+        style="cursor: pointer;"
+      >
+        {{ task.title }}
+      </span>
+          <div>
+            <button (click)="deleteTask(task.id)">Delete</button>
+            <button (click)="completeTask(task.id)">
+              {{ task.completed ? 'Undo' : 'Complete' }}
+            </button>
+            <button (click)="editTask(task.id, task.title)">Edit</button>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Conditional Rendering with @if -->
+      @if (selectedTask()) {
+        <app-task-details [task]="selectedTask"></app-task-details>
+      }
+      @else {
+        <p>No task selected. Click on a task to view details.</p>
+      }
+    </div>
+  `,
   styleUrl: './tasks-list.component.scss',
   animations: [
     trigger('fade', [
@@ -27,8 +65,9 @@ export class TasksListComponent {
   @ViewChild('taskInput') taskInput: any;
   tasks: any;
   currentTaskId: number | null = null;
+  selectedTask = signal<any>(null);
 
-  constructor(private tasksService: TasksService) {
+  constructor(public tasksService: TasksService) {
     this.tasks = this.tasksService.tasks;
   }
 
@@ -42,8 +81,13 @@ export class TasksListComponent {
     this.taskInput.nativeElement.value = '';
   }
 
+  selectTask(task: any) {
+    this.selectedTask.set(task);
+  }
+
   deleteTask(id: number) {
     this.tasksService.deleteTask(id);
+    this.selectedTask.set(null);
   }
 
   editTask(taskId: number, title: string) {
