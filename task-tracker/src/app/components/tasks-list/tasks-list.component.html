@@ -1,0 +1,19 @@
+<div class="task-tracker">
+  <h1>Task Tracker</h1>
+  <input
+    type="text"
+    placeholder="New task"
+    #taskInput
+    (keydown.enter)="addOrUpdateTask(taskInput.value); taskInput.value = ''"
+  />
+  <ul>
+    <li *ngFor="let task of tasks()" @fade>
+      <span [class.completed]="task.completed">{{ task.title }}</span>
+      <div>
+        <button (click)="deleteTask(task.id)">Delete</button>
+        <button (click)="completeTask(task.id)">{{task.completed ? 'Undo' : 'Complete'}}</button>
+        <button (click)="editTask(task.id, task.title)">Edit</button>
+      </div>
+    </li>
+  </ul>
+</div>
