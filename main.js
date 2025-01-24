@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 let mainWindow;
 
@@ -7,11 +8,12 @@ app.on('ready', () => {
     width: 800,
     height: 600,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
     },
   });
 
-  mainWindow.loadFile('browser/index.html');
+  mainWindow.loadFile('task-tracker/dist/task-tracker/browser/index.html');
 });
 
 app.on('window-all-closed', () => {

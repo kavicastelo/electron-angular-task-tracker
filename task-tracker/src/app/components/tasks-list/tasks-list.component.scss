@@ -1,0 +1,47 @@
+.task-tracker {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+}
+
+button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+
+  &:nth-child(2){
+    background-color: #4CAF50;
+  }
+
+  &:nth-child(3){
+    background-color: #2196F3;
+  }
+}
