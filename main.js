@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 let mainWindow;
 
@@ -30,4 +31,27 @@ ipcMain.on('toMain', (event, args) => {
 
   // Send a response back to the renderer process
   mainWindow.webContents.send('fromMain', 'Message received on Electron side!');
+});
+
+// Handle 'open-file' request
+ipcMain.on('open-file', async (event) => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Text Files', extensions: ['txt', 'md', 'json'] }],
+  });
+
+  if (!canceled && filePaths.length > 0) {
+    const filePath = filePaths[0];
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    event.sender.send('file-opened', fileContent, filePath);
+  }
+});
+
+// Handle 'save-file' request
+ipcMain.on('save-file', (event, data) => {
+  if (typeof data.content === 'undefined') {
+    console.error('fileContent is undefined');
+    return;
+  }
+  fs.writeFileSync(data.path, data.content, 'utf-8');
 });

@@ -5,3 +5,11 @@
   <button (click)="sendMessage()">Send Message to Electron</button>
   <p>{{ messageFromElectron }}</p>
 </div>
+
+<div class="file-operations">
+  <h1>File Operations with Electron</h1>
+  <button (click)="openFile()">Open File</button>
+  <button (click)="saveFile()">Save File</button>
+
+  <textarea [(ngModel)]="selectedFileContent" rows="10" cols="50"></textarea>
+</div>
