@@ -52,13 +52,19 @@ export class AppComponent {
   }
 
   saveFile() {
-    if (this.filePath) {
-      window.electron?.sendToMain('save-file', {
-        content: this.selectedFileContent,
-        path: this.filePath
-      });
-    } else {
+    if (!this.filePath) {
       alert('No file opened to save!');
+      return;
     }
+    const validExtensions = ['.txt', '.json', '.md'];
+    const fileExtension = this.filePath.slice(this.filePath.lastIndexOf('.'));
+    if (!validExtensions.includes(fileExtension)) {
+      alert(`Invalid file format! Allowed formats: ${validExtensions.join(', ')}`);
+      return;
+    }
+    window.electron?.sendToMain('save-file', {
+      content: this.selectedFileContent,
+      path: this.filePath
+    });
   }
 }

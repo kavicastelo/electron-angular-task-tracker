@@ -48,10 +48,29 @@ ipcMain.on('open-file', async (event) => {
 });
 
 // Handle 'save-file' request
-ipcMain.on('save-file', (event, data) => {
-  if (typeof data.content === 'undefined') {
+ipcMain.on('save-file', async (event, data) => {
+  const { path, content } = data;
+  if (typeof content === 'undefined') {
     console.error('fileContent is undefined');
     return;
   }
-  fs.writeFileSync(data.path, data.content, 'utf-8');
+  // Show confirmation dialog
+  const response = await dialog.showMessageBox({
+    type: 'question',
+    buttons: ['Yes', 'No'],
+    defaultId: 0,
+    title: 'Confirm Save',
+    message: `Are you sure you want to save changes to ${path}?`,
+  });
+
+  if (response.response === 0) { // User clicked 'Yes'
+    try {
+      fs.writeFileSync(path, content, 'utf-8');
+      console.log('File saved successfully:', path);
+    } catch (err) {
+      console.error('Error saving file:', err);
+    }
+  } else {
+    console.log('Save canceled by user.');
+  }
 });
