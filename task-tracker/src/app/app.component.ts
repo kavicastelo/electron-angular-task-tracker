@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import Remote = Electron.Remote;
 import * as Electron from 'electron';
@@ -22,13 +22,24 @@ declare global {
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'task-tracker';
 
   messageFromElectron: string = '';
 
   selectedFileContent: string = '';
   filePath: string = '';
+
+  newFilePath: string = 'newFile.txt';
+
+  ngOnInit() {
+    // Listen for new file creation response
+    window.electron?.onFromMain('new-file-created', (filePath: string) => {
+      this.filePath = filePath;
+      this.selectedFileContent = ''; // Reset content for the new file
+      console.log('New file path received:', filePath);
+    });
+  }
 
   sendMessage() {
     // Send a message to the main process
@@ -66,5 +77,22 @@ export class AppComponent {
       content: this.selectedFileContent,
       path: this.filePath
     });
+  }
+
+  createNewFile() {
+    if (!this.newFilePath) {
+      alert('File creation canceled.');
+      return;
+    }
+
+    // Validate file name and extension
+    const validExtensions = ['.txt', '.json'];
+    const fileExtension = this.newFilePath.slice(this.newFilePath.lastIndexOf('.'));
+    if (!validExtensions.includes(fileExtension)) {
+      alert(`Invalid file format! Allowed formats: ${validExtensions.join(', ')}`);
+      return;
+    }
+
+    window.electron?.sendToMain('create-new-file', this.newFilePath);
   }
 }
