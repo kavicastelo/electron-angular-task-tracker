@@ -12,4 +12,10 @@
   <button (click)="saveFile()">Save File</button>
 
   <textarea [(ngModel)]="selectedFileContent" rows="10" cols="50"></textarea>
+
+  <div>
+    <label for="newFilePath">Enter a name for your new file (with extension, e.g., newFile.txt):</label>
+    <input id="newFilePath" type="text" [(ngModel)]="newFilePath" placeholder="File Path" />
+    <button (click)="createNewFile()">Create New File</button>
+  </div>
 </div>

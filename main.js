@@ -74,3 +74,36 @@ ipcMain.on('save-file', async (event, data) => {
     console.log('Save canceled by user.');
   }
 });
+
+// Handle 'create-new-file' request
+ipcMain.on('create-new-file', async (event, fileName) => {
+  const { dialog } = require('electron');
+  const path = require('path');
+  const fs = require('fs');
+
+  // Open a dialog to let the user choose where to save the new file
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Create New File',
+    defaultPath: path.join(__dirname, fileName),
+    buttonLabel: 'Create File',
+    filters: [
+      { name: 'Text Files', extensions: ['txt'] },
+      { name: 'JSON Files', extensions: ['json'] },
+    ],
+  });
+
+  if (filePath) {
+    try {
+      fs.writeFileSync(filePath, '', 'utf-8'); // Create an empty file
+      console.log('New file created:', filePath);
+
+      // Inform the renderer process about the new file path
+      event.reply('new-file-created', filePath);
+    } catch (err) {
+      console.error('Error creating file:', err);
+    }
+  } else {
+    console.log('File creation canceled.');
+  }
+});
+
