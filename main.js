@@ -77,10 +77,6 @@ ipcMain.on('save-file', async (event, data) => {
 
 // Handle 'create-new-file' request
 ipcMain.on('create-new-file', async (event, fileName) => {
-  const { dialog } = require('electron');
-  const path = require('path');
-  const fs = require('fs');
-
   // Open a dialog to let the user choose where to save the new file
   const { filePath } = await dialog.showSaveDialog({
     title: 'Create New File',
@@ -93,6 +89,21 @@ ipcMain.on('create-new-file', async (event, fileName) => {
   });
 
   if (filePath) {
+    if (fs.existsSync(filePath)) {
+      const { response } = await dialog.showMessageBox({
+        type: 'warning',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        title: 'Overwrite File',
+        message: `The file "${filePath}" already exists. Do you want to overwrite it?`,
+      });
+
+      if (response === 1) {
+        console.log('File overwrite canceled.');
+        return;
+      }
+    }
+
     try {
       fs.writeFileSync(filePath, '', 'utf-8'); // Create an empty file
       console.log('New file created:', filePath);
@@ -101,9 +112,11 @@ ipcMain.on('create-new-file', async (event, fileName) => {
       event.reply('new-file-created', filePath);
     } catch (err) {
       console.error('Error creating file:', err);
+      event.reply('new-file-created', null);
     }
   } else {
     console.log('File creation canceled.');
+    event.reply('new-file-created', null);
   }
 });
 

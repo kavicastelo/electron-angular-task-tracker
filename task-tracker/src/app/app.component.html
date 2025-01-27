@@ -16,6 +16,6 @@
   <div>
     <label for="newFilePath">Enter a name for your new file (with extension, e.g., newFile.txt):</label>
     <input id="newFilePath" type="text" [(ngModel)]="newFilePath" placeholder="File Path" />
-    <button (click)="createNewFile()">Create New File</button>
+    <button (click)="createNewFile()" [disabled]="!newFilePath || newFilePath.trim() === ''">Create New File</button>
   </div>
 </div>
