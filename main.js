@@ -120,3 +120,12 @@ ipcMain.on('create-new-file', async (event, fileName) => {
   }
 });
 
+ipcMain.on('open-file', async (event, filePath) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    console.log('✅ File opened:', filePath);
+    event.reply('file-opened', filePath, fileContent);
+  } catch (err) {
+    console.error('❌ Error opening file:', err);
+  }
+});

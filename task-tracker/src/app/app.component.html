@@ -18,4 +18,13 @@
     <input id="newFilePath" type="text" [(ngModel)]="newFilePath" placeholder="File Path" />
     <button (click)="createNewFile()" [disabled]="!newFilePath || newFilePath.trim() === ''">Create New File</button>
   </div>
+
+  <div class="recent-files">
+    <h3>Recent Files</h3>
+    <ul>
+      <li *ngFor="let file of recentFiles" (click)="openRecentFile(file)">
+        {{ file }}
+      </li>
+    </ul>
+  </div>
 </div>
